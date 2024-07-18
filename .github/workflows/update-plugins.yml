@@ -1,0 +1,60 @@
+name: Update Plugins
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # This will run the workflow daily at midnight UTC
+  workflow_dispatch:
+
+jobs:
+  update-plugins:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '5.0.x'
+
+      - name: Update Plugins
+        run: |
+          # List of plugins and their GitHub URLs
+          PLUGINS=(
+            "https://github.com/owner/repo1.git"
+            "https://github.com/owner/repo2.git"
+          )
+
+          # Directory to store plugins
+          PLUGIN_DIR="Assets/Plugins"
+
+          # Remove old plugin directories
+          rm -rf $PLUGIN_DIR/*
+
+          # Clone each plugin
+          for PLUGIN in "${PLUGINS[@]}"; do
+            PLUGIN_NAME=$(basename $PLUGIN .git)
+            git clone $PLUGIN $PLUGIN_DIR/$PLUGIN_NAME
+          done
+
+      - name: Create Pull Request Branch
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b update-plugins-branch
+          git add .
+          git commit -m "Update third-party plugins"
+          git push --set-upstream origin update-plugins-branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Pull Request
+        id: create_pr
+        uses: peter-evans/create-pull-request@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: Update third-party plugins
+          branch: update-plugins-branch
+          title: "Update third-party plugins"
+          body: "This PR updates the third-party plugins to their latest versions."
