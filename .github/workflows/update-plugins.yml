@@ -58,3 +58,5 @@ jobs:
           branch: update-plugins-branch
           title: "Update third-party plugins"
           body: "This PR updates the third-party plugins to their latest versions."
+          reviewers: |
+            ayush-rstg  # Replace with actual GitHub usernames
