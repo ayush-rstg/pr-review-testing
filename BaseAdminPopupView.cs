@@ -26,6 +26,7 @@ namespace Gsn.Bingo.AdminPopup
         [SerializeField] private AdminPopupProgressBarView _progressBar;
         [SerializeField] private string _soundSpecialOpening;
         [SerializeField] private VideoPlayerView _videoPlayerView;
+        [SerializeField] private int _newIntAdded;
 #if UNITY_EDITOR
         public List<AdminPopupTextView> TextList
         {
